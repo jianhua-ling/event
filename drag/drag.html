@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>原生拖放</title>
+    <style type="text/css">
+        *{margin: 0;padding: 0;}
+        .div{width: 300px;height: 150px;border: 1px solid #aaaaaa;float: left;margin-right: 15px;}
+        p{font-size: 18px;color: #000;padding: 15px;}
+    </style>
+</head>
+<body>
+<div class="div" id="div1">
+    <p draggable="true" id="dragtarget">点我拖动</p>
+</div>
+<div class="div" id="div2">
+
+</div>
+<p><strong>注意：</strong>Internet Explorer 8 及更早 IE 版本或 Safari 5.1 及更早版本的浏览器不支持 drag 事件。</p>
+<p id="demo" style="clear: both"></p>
+</body>
+<script type="text/javascript">
+    var div1 = document.getElementById("div1");
+    var dragtarget = document.getElementById("dragtarget");
+    var div2 = document.getElementById("div2");
+
+    /**
+     * 给拖放元素添加dragstart事件，并设置数据
+     * */
+    dragtarget.ondragstart = function(event){
+        var event = event?event:window.event;//获取事件兼容性写法，window.event为ie下以这种方式添加事件的事件对象
+        var eventTarget = event.target||event.srcElement;//event.srcElement为IE事件目标
+        event.dataTransfer.setData("Text",eventTarget.id);
+        document.getElementById("demo").innerHTML="开始拖动 p 元素";
+    }
+
+    /**
+     * 给拖放元素添加dragstart事件
+     * */
+    dragtarget.ondragend=function(){
+        document.getElementById("demo").innerHTML="完成 p 元素的拖动。";
+    }
+
+    /**
+     * 重写dragenter和dragover事件的默认事件将目标元素变成有效的放置目标
+     * */
+    div2.ondragenter = allowDrop;
+    div2.ondragover = allowDrop;
+    div1.ondragenter = allowDrop;
+    div1.ondragover = allowDrop;
+    function allowDrop(event) {
+        var event = event?event:window.event;
+        if(event.preventDefault){
+            event.preventDefault();
+        }else{
+            event.returnValue=false;
+        }
+    }
+
+    /**
+     * 给放置目标添加drop事件
+     * */
+    div2.ondrop = drop;
+    div1.ondrop = drop;
+    function drop(event) {
+        var event = event?event:window.event;
+        if(event.preventDefault){               //去掉默认事件避免部分浏览器打开放置目标上的url
+            event.preventDefault();
+        }else{
+            event.returnValue=false;
+        }
+        var data = event.dataTransfer.getData("Text");
+        var eventTarget = event.target||event.srcElement;
+        eventTarget.appendChild(document.getElementById(data));
+    }
+</script>
+</html>
